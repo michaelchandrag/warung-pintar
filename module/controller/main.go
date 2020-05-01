@@ -73,6 +73,7 @@ func Find (c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"success": true,
+		"message": "Success fetch messages.",
 		"data": result,
 	})
 }
