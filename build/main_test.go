@@ -5,33 +5,70 @@ import (
    "net/http"
    "net/http/httptest"
    "testing"
-   "github.com/gin-gonic/gin"
+   "io"
+   "bytes"
+
    "github.com/stretchr/testify/assert"
 
    router "github.com/michaelchandrag/warung-pintar/module/router"
+   storage "github.com/michaelchandrag/warung-pintar/module/storage"
 )
-func performRequest(r http.Handler, method, path string) *httptest.ResponseRecorder {
-   req, _ := http.NewRequest(method, path, nil)
+func performRequest(r http.Handler, method, path string, payload io.Reader) *httptest.ResponseRecorder {
+   req, _ := http.NewRequest(method, path, payload)
    w := httptest.NewRecorder()
    r.ServeHTTP(w, req)
    return w
 }
-func TestHelloWorld(t *testing.T) {
-   // Build our expected body
-   body := gin.H{
-      "hello": "world",
+
+func TestSend(t *testing.T) {
+   type request struct {
+      Text     string      `json:"text"`
    }
-   // Grab our router
+
+   payload := request{
+      Text: "Testing text.",
+   }
+
+   payloadJson, _ := json.Marshal(&payload)
+   b := bytes.NewBuffer(payloadJson)
+
    router := router.SetupRouter()
-   w := performRequest(router, "GET", "/")
+   w := performRequest(router, "POST", "/send", b)
    assert.Equal(t, http.StatusOK, w.Code)
-   // Convert the JSON response to a map
-   var response map[string]string
-   err := json.Unmarshal([]byte(w.Body.String()), &response)
-   // Grab the value & whether or not it exists
-   value, exists := response["hello"]
-   // Make some assertions on the correctness of the response.
+
+   type response struct {
+      Data        storage.Message      `json:"data"`
+      Success     bool                 `json:"success"`
+      Message     string               `json:"message"`
+      Error       interface{}          `json:"error,omitempty"`
+   }
+
+   var result response
+   err := json.Unmarshal([]byte(w.Body.String()), &result)
+
    assert.Nil(t, err)
-   assert.True(t, exists)
-   assert.Equal(t, body["hello"], value)
+   assert.NotNil(t, result.Data.ID)
+   assert.NotEqual(t, result.Data.ID, 0)
+   assert.Equal(t, result.Data.Text, payload.Text)
+   assert.Equal(t, result.Success, true)
+}
+
+func TestFind(t *testing.T) {
+   router := router.SetupRouter()
+   w := performRequest(router, "GET", "/messages", nil)
+   assert.Equal(t, http.StatusOK, w.Code)
+
+   type response struct {
+      Data        []storage.Message    `json:"data"`
+      Success     bool                 `json:"success"`
+      Message     string               `json:"message"`
+      Error       interface{}          `json:"error,omitempty"`
+   }
+
+   var result response
+   err := json.Unmarshal([]byte(w.Body.String()), &result)
+
+   assert.Nil(t, err)
+   assert.NotNil(t, result.Data)
+   assert.Equal(t, result.Success, true)
 }
