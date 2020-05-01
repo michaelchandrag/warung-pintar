@@ -4,15 +4,11 @@ import (
 	"os"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	router "github.com/michaelchandrag/warung-pintar/module/router"
 )
 
 func main () {
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	r := router.SetupRouter()
+
 	r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
