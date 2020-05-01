@@ -8,7 +8,9 @@ import (
 func SetupRouter () *gin.Engine {
 	r := gin.Default()
 	
-	r.GET("/pong", controller.Pong)
+	r.GET("/", controller.HelloWorld)
+	r.POST("/send", controller.Send)
+	r.GET("/messages", controller.Find)
 
 	return r
 }
