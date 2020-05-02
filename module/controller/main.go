@@ -7,12 +7,16 @@ import (
 	contract "github.com/michaelchandrag/warung-pintar/module/contract"
 	usecase "github.com/michaelchandrag/warung-pintar/module/usecase"
 	storage "github.com/michaelchandrag/warung-pintar/module/storage"
+	websocket "github.com/michaelchandrag/warung-pintar/utils/websocket"
 )
 
-func HelloWorld (c *gin.Context) {
-	c.JSON(200, gin.H{
-	  "hello": "ASD",
+func ServePage (c *gin.Context) {
+	c.HTML(200, "client.html", gin.H{
 	})
+}
+
+func ServeWs (c *gin.Context) {
+	websocket.ServeWs(websocket.WsHub, c.Writer, c.Request)
 }
 
 func Send (c *gin.Context) {
