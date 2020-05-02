@@ -53,4 +53,4 @@ Webpage real-time chat (access this in your browser)
 ```
 URL: [GET] {BASE_URL}/
 ```
-client.png
+![Client page](client.png)
