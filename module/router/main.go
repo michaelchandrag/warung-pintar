@@ -8,8 +8,9 @@ import (
 func SetupRouter () *gin.Engine {
 	r := gin.Default()
 	
-	// load template views
+	// load template views and assets
 	r.LoadHTMLGlob("public/views/*")
+	r.Static("/js", "public/assets/js")
 
 	// load router
 	r.GET("/", controller.ServePage)

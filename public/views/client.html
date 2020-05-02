@@ -1,9 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Chat Example</title>
+<title>Chat</title>
 <script type="text/javascript">
 window.onload = function () {
+    $.ajax({
+        type: "GET",
+        url: document.location.protocol + '//' + document.location.host + "/messages",
+        contentType: "application/json",
+        success: function(response) {
+            var data = response.data
+            for (var key in data) {
+                var item = document.createElement("div");
+                item.innerText = data[key].text;
+                appendLog(item);
+            }
+        }
+    })
     var conn;
     var msg = document.getElementById("msg");
     var log = document.getElementById("log");
@@ -24,6 +37,19 @@ window.onload = function () {
             return false;
         }
         conn.send(msg.value);
+        var reqBody = {
+            "text": msg.value
+        }
+        reqBody = JSON.stringify(reqBody)
+        $.ajax({
+            type: "POST",
+            url: document.location.protocol + '//' + document.location.host + "/send",
+            contentType: "application/json",
+            data: reqBody,
+            success: function(response) {
+              console.log(response)
+            }
+        })
         msg.value = "";
         return false;
     };
@@ -94,5 +120,6 @@ body {
     <input type="submit" value="Send" />
     <input type="text" id="msg" size="64" autofocus />
 </form>
+<script src="/js/jquery.js"></script>
 </body>
 </html>
