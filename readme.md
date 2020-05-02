@@ -3,7 +3,9 @@ An API that serve real-time messaging. Supported with websocket.
 
 ## Installing
 Clone this repo under `{GOPATH}/src/github.com/michaelchandrag/warung-pintar`
+
 Set up environment variables at `.env`
+
 run `./run`
 
 ## Running the test
